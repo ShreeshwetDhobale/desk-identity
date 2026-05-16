@@ -88,6 +88,13 @@ body {
   animation: blink 1s infinite;
 }
 
+.blinker {
+  display: inline-block;
+  width: 10px;
+  background: #00ff00;
+  animation: blink 0.5s 3sec;
+}
+
 @keyframes blink {
   0%,100% { opacity: 1; }
   50% { opacity: 0; }
@@ -103,7 +110,7 @@ body {
     <div></div><div></div><div></div><div></div>
     <div></div><div></div><div></div><div></div>
   </div>
-  <div class="loading-text">Connecting to Internal Network...</div>
+  <div class="loading-text">Connecting to WILLSCOT Internal Network...</div>
 </div>
 
 <!-- Terminal -->
@@ -115,24 +122,24 @@ const terminal = document.getElementById("terminal");
 
 /* Terminal Lines */
 const lines = [
-"ContainerCorp Internal System v2.8",
+" WILLSCOT Internal System v1.0",
 "----------------------------------",
 "",
-"C:\\Office> scan_desk --id=QRTABLE01",
+"C:\\OfficeServer> scanning_desk --id=A07/014",
 "Scanning workspace...",
 "",
-"C:\\Office> query_user --location='Desk-21A'",
+"C:\\OfficeServer> query_user --location='A07/014'",
 "Executing SOQL query...",
 "",
-"SELECT Name, Title FROM Employee",
-"WHERE Desk__c = '21A'",
+"SELECT Name, Title, Role FROM Employee WHERE Desk__c = '014' AND Build__c = 'A07'",
 "",
-"✔ Record Found",
+"✔ Details Found",
 "",
-"Name  : YOUR NAME",
-"Title : Salesforce Developer",
+"Name  : Shreeshwet Dhobale",
+"Role  : Salesforce Developer",
+"Email : shreeshwet.dhobale@willscot.com",
+"Contact : 9324849093",
 "",
-"Status: Active",
 "",
 "C:\\Office> _"
 ];
@@ -140,9 +147,13 @@ const lines = [
 let lineIndex = 0;
 let charIndex = 0;
 
-function startTerminal() {
-  loader.style.display = "none";
+function startInitialBlinker(){
+ loader.style.display = "none";
   terminal.style.display = "block";
+addInitialBlinker();
+}
+
+function startTerminal() {
   typeLine();
 }
 
@@ -169,10 +180,19 @@ function typeLine() {
 function addCursor() {
   const cursor = document.createElement("span");
   cursor.classList.add("cursor");
+  cursor.innerHTML = "_";
   terminal.appendChild(cursor);
 }
 
-setTimeout(startTerminal, 3000);
+function addInitialBlinker() {
+  const blinker = document.createElement("span");
+  blinker.classList.add("blinker");
+  blinker.innerHTML = "_";
+  terminal.appendChild(blinker);
+}
+
+setTimeout(startInitialBlinker, 3000);
+setTimeout(startTerminal, 6000);
 </script>
 
 </body>
