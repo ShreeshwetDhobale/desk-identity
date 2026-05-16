@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Desk Identity Lookup</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: #00ff00;
+  font-family: Consolas, monospace;
+  overflow: hidden;
+}
+
+/* ---------------- LOADER ---------------- */
+
+#loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #00ff00;
+  font-size: 18px;
+  z-index: 10;
+}
+
+/* Salesforce Dotted Spinner */
+.slds-spinner {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+.slds-spinner div {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #00ff00;
+  border-radius: 50%;
+  opacity: 0.2;
+  animation: fadeSpin 1.2s linear infinite;
+}
+
+/* Position dots in circle */
+.slds-spinner div:nth-child(1) { top: 0; left: 25px; animation-delay: 0s; }
+.slds-spinner div:nth-child(2) { top: 8px; left: 42px; animation-delay: 0.15s; }
+.slds-spinner div:nth-child(3) { top: 25px; left: 50px; animation-delay: 0.3s; }
+.slds-spinner div:nth-child(4) { top: 42px; left: 42px; animation-delay: 0.45s; }
+.slds-spinner div:nth-child(5) { top: 50px; left: 25px; animation-delay: 0.6s; }
+.slds-spinner div:nth-child(6) { top: 42px; left: 8px; animation-delay: 0.75s; }
+.slds-spinner div:nth-child(7) { top: 25px; left: 0; animation-delay: 0.9s; }
+.slds-spinner div:nth-child(8) { top: 8px; left: 8px; animation-delay: 1.05s; }
+
+@keyframes fadeSpin {
+  0% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+
+.loading-text {
+  animation: blinkText 1.5s infinite;
+}
+
+@keyframes blinkText {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ---------------- TERMINAL ---------------- */
+
+#terminal {
+  padding: 20px;
+  font-size: 18px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  display: none;
+}
+
+.cursor {
+  display: inline-block;
+  width: 10px;
+  background: #00ff00;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Loader -->
+<div id="loader">
+  <div class="slds-spinner">
+    <div></div><div></div><div></div><div></div>
+    <div></div><div></div><div></div><div></div>
+  </div>
+  <div class="loading-text">Connecting to Internal Network...</div>
+</div>
+
+<!-- Terminal -->
+<div id="terminal"></div>
+
+<script>
+const loader = document.getElementById("loader");
+const terminal = document.getElementById("terminal");
+
+/* Terminal Lines */
+const lines = [
+"ContainerCorp Internal System v2.8",
+"----------------------------------",
+"",
+"C:\\Office> scan_desk --id=QRTABLE01",
+"Scanning workspace...",
+"",
+"C:\\Office> query_user --location='Desk-21A'",
+"Executing SOQL query...",
+"",
+"SELECT Name, Title FROM Employee",
+"WHERE Desk__c = '21A'",
+"",
+"✔ Record Found",
+"",
+"Name  : YOUR NAME",
+"Title : Salesforce Developer",
+"",
+"Status: Active",
+"",
+"C:\\Office> _"
+];
+
+let lineIndex = 0;
+let charIndex = 0;
+
+function startTerminal() {
+  loader.style.display = "none";
+  terminal.style.display = "block";
+  typeLine();
+}
+
+function typeLine() {
+  if (lineIndex >= lines.length) {
+    addCursor();
+    return;
+  }
+
+  const currentLine = lines[lineIndex];
+
+  if (charIndex < currentLine.length) {
+    terminal.innerHTML += currentLine.charAt(charIndex);
+    charIndex++;
+    setTimeout(typeLine, 35);
+  } else {
+    terminal.innerHTML += "\n";
+    lineIndex++;
+    charIndex = 0;
+    setTimeout(typeLine, 500);
+  }
+}
+
+function addCursor() {
+  const cursor = document.createElement("span");
+  cursor.classList.add("cursor");
+  terminal.appendChild(cursor);
+}
+
+setTimeout(startTerminal, 3000);
+</script>
+
+</body>
+</html>
