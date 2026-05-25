@@ -29,7 +29,7 @@ body {
   z-index: 10;
 }
 
-/* Salesforce Dotted Spinner */
+/* Spinner */
 .slds-spinner {
   position: relative;
   width: 60px;
@@ -47,7 +47,6 @@ body {
   animation: fadeSpin 1.2s linear infinite;
 }
 
-/* Position dots in circle */
 .slds-spinner div:nth-child(1) { top: 0; left: 25px; animation-delay: 0s; }
 .slds-spinner div:nth-child(2) { top: 8px; left: 42px; animation-delay: 0.15s; }
 .slds-spinner div:nth-child(3) { top: 25px; left: 50px; animation-delay: 0.3s; }
@@ -77,8 +76,10 @@ body {
   padding: 20px;
   font-size: 18px;
   white-space: pre-wrap;
-  line-height: 1.3;
+  line-height: 1.4;
   display: none;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
 }
 
 .cursor {
@@ -88,40 +89,29 @@ body {
   animation: blink 1s infinite;
 }
 
-.blinker {
-  display: inline-block;
-  width: 10px;
-  background: #00ff00;
-  animation: blink 0.9s infinite;
-}
-.blinker1 {
-  display: inline-block;
-  width: 10px;
-  background: #00ff00;
-  animation: blink 0.8s infinite;
-}
-.blinker2 {
-  display: inline-block;
-  width: 10px;
-  background: #00ff00;
-  animation: blink 0.7s infinite;
-}
-.blinker3 {
-  display: inline-block;
-  width: 10px;
-  background: #00ff00;
-  animation: blink 0.6s infinite;
-}
-.blinker4 {
-  display: inline-block;
-  width: 10px;
-  background: #00ff00;
-  animation: blink 0.5s infinite;
-}
-
 @keyframes blink {
   0%,100% { opacity: 1; }
   50% { opacity: 0; }
+}
+
+/* ---------------- INPUT BOX ---------------- */
+
+#inputContainer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: black;
+  padding: 10px;
+}
+
+#commandInput {
+  width: 100%;
+  background: black;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  font-family: Consolas;
+  font-size: 18px;
 }
 </style>
 </head>
@@ -140,11 +130,20 @@ body {
 <!-- Terminal -->
 <div id="terminal"></div>
 
+<!-- Input -->
+<div id="inputContainer" style="display:none;">
+  <input id="commandInput" placeholder="Type command... (try 'game')" />
+</div>
+
 <script>
+
 const loader = document.getElementById("loader");
 const terminal = document.getElementById("terminal");
+const inputBox = document.getElementById("commandInput");
+const inputContainer = document.getElementById("inputContainer");
 
-/* Terminal Lines */
+/* ---------------- TERMINAL DATA ---------------- */
+
 const lines = [
 "",
 "\nWILLSCOT Internal System v1.0",
@@ -166,17 +165,25 @@ const lines = [
 "Contact : 9324849093",
 "",
 "",
-"C:\\OfficeServer> Process Complete."
+"C:\\OfficeServer> Process Complete.",
+"",
+"Tip: Type 'game' to play 🎮"
 ];
 
 let lineIndex = 0;
 let charIndex = 0;
 
+/* ---------------- GAME STATE ---------------- */
+
+let gameActive = false;
+let secretNumber = 0;
+let attempts = 0;
+
+/* ---------------- START SEQUENCE ---------------- */
+
 function startInitialBlinker(){
-loader.style.display = "none";
-terminal.style.display = "block";
-addCursor();
-addInitialBlinker();
+  loader.style.display = "none";
+  terminal.style.display = "block";
 }
 
 function startTerminal() {
@@ -185,6 +192,8 @@ function startTerminal() {
 
 function typeLine() {
   if (lineIndex >= lines.length) {
+    inputContainer.style.display = "block";
+    inputBox.focus();
     return;
   }
 
@@ -200,41 +209,114 @@ function typeLine() {
     charIndex = 0;
     setTimeout(typeLine, 200);
   }
+
+  terminal.scrollTop = terminal.scrollHeight;
 }
 
-function addCursor() {
-  
+/* ---------------- INPUT HANDLER ---------------- */
+
+inputBox.addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    const input = inputBox.value.trim();
+    terminal.innerHTML += "\n> " + input;
+    inputBox.value = "";
+
+    if (gameActive) {
+      handleGameInput(input);
+    } else {
+      handleCommand(input);
+    }
+
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+});
+
+/* ---------------- COMMAND SYSTEM ---------------- */
+
+function handleCommand(input) {
+  switch(input.toLowerCase()) {
+
+    case "game":
+      startGame();
+      break;
+
+    case "help":
+      print("\nCommands:");
+      print("game  - Play guessing game");
+      print("help  - Show commands");
+      break;
+
+    case "whoami":
+      print("\nSalesforce Developer 😎");
+      break;
+
+    default:
+      print("\nUnknown command. Try 'help'");
+  }
 }
 
-function addInitialBlinker() {
-const cursor = document.createElement("span");
-  cursor.classList.add("cursor");
-  cursor.innerHTML = "_";
-  terminal.appendChild(cursor);
-  const blinker = document.createElement("span");
-  blinker.classList.add("blinker");
-  blinker.innerHTML = "_";
-  terminal.appendChild(blinker);
-   const blinker1 = document.createElement("span");
-  blinker1.classList.add("blinker1");
-  blinker1.innerHTML = "_";
-  terminal.appendChild(blinker1);
-   const blinker2 = document.createElement("span");
-  blinker2.classList.add("blinker2");
-  blinker2.innerHTML = "_";
-  terminal.appendChild(blinker2);
-   const blinker3 = document.createElement("span");
-  blinker3.classList.add("blinker3");
-  blinker3.innerHTML = "_";
-  terminal.appendChild(blinker3);
-   const blinker4 = document.createElement("span");
-  blinker4.classList.add("blinker4");
-  blinker4.innerHTML = "_";
-  terminal.appendChild(blinker4);
+/* ---------------- GAME ---------------- */
+
+function startGame() {
+  gameActive = true;
+  secretNumber = Math.floor(Math.random() * 100) + 1;
+  attempts = 0;
+
+  print("\n🎮 GAME STARTED");
+  print("Guess a number between 1 and 100");
+  print("Type your guess...");
 }
+
+function handleGameInput(input) {
+
+  if (input.toLowerCase() === "exit") {
+    print("Game exited.");
+    gameActive = false;
+    return;
+  }
+
+  const guess = parseInt(input);
+
+  if (isNaN(guess)) {
+    print("⛔ Enter a valid number");
+    return;
+  }
+
+  attempts++;
+
+  if (guess === secretNumber) {
+    print(`✅ Correct! Number was ${secretNumber}`);
+    print(`🎯 Attempts: ${attempts}`);
+
+    if (attempts <= 5) {
+      print("🏆 Hacker level guessing!");
+    } else if (attempts <= 10) {
+      print("👏 Nice job!");
+    } else {
+      print("😅 That took a while!");
+    }
+
+    print("\nType 'game' to play again");
+    gameActive = false;
+
+  } else if (guess > secretNumber) {
+    print("📉 Too high");
+  } else {
+    print("📈 Too low");
+  }
+}
+
+/* ---------------- PRINT ---------------- */
+
+function print(text) {
+  terminal.innerHTML += "\n" + text;
+}
+
+/* ---------------- START ---------------- */
 
 setTimeout(startInitialBlinker, 3000);
 setTimeout(startTerminal, 6000);
+
 </script>
 
 </body>
