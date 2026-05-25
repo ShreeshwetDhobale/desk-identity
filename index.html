@@ -88,7 +88,36 @@ body {
   background: #00ff00;
   animation: blink 1s infinite;
 }
-
+.blinker {
+  display: inline-block;
+  width: 10px;
+  background: #00ff00;
+  animation: blink 0.9s infinite;
+}
+.blinker1 {
+  display: inline-block;
+  width: 10px;
+  background: #00ff00;
+  animation: blink 0.8s infinite;
+}
+.blinker2 {
+  display: inline-block;
+  width: 10px;
+  background: #00ff00;
+  animation: blink 0.7s infinite;
+}
+.blinker3 {
+  display: inline-block;
+  width: 10px;
+  background: #00ff00;
+  animation: blink 0.6s infinite;
+}
+.blinker4 {
+  display: inline-block;
+  width: 10px;
+  background: #00ff00;
+  animation: blink 0.5s infinite;
+}
 @keyframes blink {
   0%,100% { opacity: 1; }
   50% { opacity: 0; }
@@ -184,8 +213,38 @@ let attempts = 0;
 function startInitialBlinker(){
   loader.style.display = "none";
   terminal.style.display = "block";
+  addCursor();
+addInitialBlinker();
+}
+function addInitialBlinker() {
+const cursor = document.createElement("span");
+  cursor.classList.add("cursor");
+  cursor.innerHTML = "_";
+  terminal.appendChild(cursor);
+  const blinker = document.createElement("span");
+  blinker.classList.add("blinker");
+  blinker.innerHTML = "_";
+  terminal.appendChild(blinker);
+   const blinker1 = document.createElement("span");
+  blinker1.classList.add("blinker1");
+  blinker1.innerHTML = "_";
+  terminal.appendChild(blinker1);
+   const blinker2 = document.createElement("span");
+  blinker2.classList.add("blinker2");
+  blinker2.innerHTML = "_";
+  terminal.appendChild(blinker2);
+   const blinker3 = document.createElement("span");
+  blinker3.classList.add("blinker3");
+  blinker3.innerHTML = "_";
+  terminal.appendChild(blinker3);
+   const blinker4 = document.createElement("span");
+  blinker4.classList.add("blinker4");
+  blinker4.innerHTML = "_";
+  terminal.appendChild(blinker4);
 }
 
+setTimeout(startInitialBlinker, 3000);
+setTimeout(startTerminal, 6000);
 function startTerminal() {
   typeLine();
 }
