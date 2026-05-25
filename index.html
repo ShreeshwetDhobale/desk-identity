@@ -88,6 +88,7 @@ body {
   background: #00ff00;
   animation: blink 1s infinite;
 }
+
 .blinker {
   display: inline-block;
   width: 10px;
@@ -213,7 +214,7 @@ let attempts = 0;
 function startInitialBlinker(){
   loader.style.display = "none";
   terminal.style.display = "block";
-  addCursor();
+ 
 addInitialBlinker();
 }
 function addInitialBlinker() {
@@ -245,6 +246,7 @@ const cursor = document.createElement("span");
 
 setTimeout(startInitialBlinker, 3000);
 setTimeout(startTerminal, 6000);
+
 function startTerminal() {
   typeLine();
 }
